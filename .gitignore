@@ -1,0 +1,9 @@
+### TOX and egg files
+.tox/
+*.egg-info
+
+### PyCharm meta folder
+.idea/
+
+### Python
+__pycache__/
