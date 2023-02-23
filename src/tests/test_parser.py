@@ -3,7 +3,7 @@ import unittest
 from parser import get_all_keys
 
 
-def test_get_all_key():
+def test_get_all_keys():
     case = unittest.TestCase()
     example_json = {
         "key1_1": 1234,
