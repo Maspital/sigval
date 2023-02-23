@@ -14,6 +14,7 @@ _global_options = [
 
 @click.group()
 def cli():
+    """Tool for quickly checking the validity and completeness of a Sigma rule mapping"""
     pass
 
 

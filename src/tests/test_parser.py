@@ -1,6 +1,6 @@
 import unittest
 
-from validate_mapping import get_all_keys
+from parser import get_all_keys
 
 
 def test_get_all_key():

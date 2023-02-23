@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="sigma-mapping-validator",
+    name="sigval",
     version="1.0.0",
     packages=find_packages("src", exclude=["*tests"]),
     package_dir={"": "src"},
