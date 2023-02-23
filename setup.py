@@ -11,7 +11,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'sigma-validate = console:cli',
+            'sigval = console:cli',
         ]
     }
 )
