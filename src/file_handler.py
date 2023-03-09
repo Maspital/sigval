@@ -4,6 +4,9 @@ import json
 
 import parser
 
+ERR = "\033[91m[ERROR]"
+END = "\033[0m"
+
 
 def fields_from_logs(winlogbeat_file):
     with open(winlogbeat_file, "r") as jsonl_file:
@@ -14,6 +17,9 @@ def fields_from_logs(winlogbeat_file):
         fields_used.extend(parser.get_all_keys(event, ""))
     fields_used = list(set(fields_used))
     fields_used.sort()
+
+    if not fields_used:
+        print_error("log file")
     return fields_used
 
 
@@ -23,9 +29,11 @@ def fields_from_mapping(direction, mapping_file, mapping_type):
     match mapping_type:
         case "chainsaw":
             fields_mapped = parser.chainsaw_mapping(direction, mapping_file)
-        case "logprep":
-            parser.logprep_mapping(direction, mapping_file)
+        case "sigma":
+            fields_mapped = parser.sigma_mapping(direction, mapping_file)
 
+    if not fields_mapped:
+        print_error("mapping file")
     return fields_mapped
 
 
@@ -58,4 +66,12 @@ def fields_from_rules(sigma_dir):
 
     fields_used = list(set(fields_used))
     fields_used.sort()
+
+    if not fields_used:
+        print_error("Sigma rule directory")
     return fields_used
+
+
+def print_error(cause):
+    print(f"{ERR} No fields were obtained from the provided {cause}, results will likely be incorrect. "
+          f"Are you sure this is the correct path?{END}\n")

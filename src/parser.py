@@ -16,9 +16,33 @@ def chainsaw_mapping(direction, mapping_file):
     return fields_mapped
 
 
-def logprep_mapping(direction, mapping_file):
-    print("Parsing for logprep mapping not yet implemented. Exiting...")
-    exit(1)
+def sigma_mapping(direction, mapping_file):
+    # Fields mapped FROM are just they dict keys (aka strings),
+    # while the fields mapped TO can be strings, dicts or lists
+    with open(mapping_file, "r") as file:
+        mapping = yaml.safe_load(file)["fieldmappings"]
+
+    fields_mapped = []
+    if direction == "from":
+        for field in mapping:
+            if type(field) is str:
+                fields_mapped.append(field)
+    elif direction == "to":
+        keys = list(mapping.keys())
+        for key in keys:
+            data_type = type(mapping[key])
+            if data_type is str:
+                fields_mapped.append(mapping[key])
+            if data_type is dict:
+                fields_mapped.extend(list(mapping[key].values()))
+            if data_type is list:
+                fields_mapped.extend(mapping[key])
+            else:
+                print(f"\033[91m[WARNING]\033[0m Unexpected data type: {data_type}")
+
+    fields_mapped = list(set(fields_mapped))
+    fields_mapped.sort()
+    return fields_mapped
 
 
 def get_all_keys(current_dict, previous_key):
@@ -37,6 +61,7 @@ def get_all_keys(current_dict, previous_key):
 
 
 def get_fields_from_list(list_of_stuff):
+    # Strings and dict values are not desired, only get keys of dicts inside the list
     contained_fields = []
     for entry in list_of_stuff:
         if type(entry) is str:
