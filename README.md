@@ -2,7 +2,7 @@
 Sigma Mapping Validator
 
 Easy-to-use tool for checking the completeness and validity of a Sigma mapping file.
-Currently only supports mapping files written for Chainsaw, but others (e.g., logprep) will be added in the near future.
+Currently only supports mapping files written for the Sigma converter and Chainsaw, others will be added as needed.
 A mapping file can be compared to either a logfile containing winlogbeat events or a directory containing Sigma rules,
 resulting in three modes:
 - `mapping-to-logs`: Check if all fields that are mapped ***to*** actually occur in any winlogbeat event,
@@ -46,9 +46,9 @@ Usage: sigval mapping-to-rules [OPTIONS] MAPPING_FILE RULES_DIR
   Compare fields mapped *FROM* to Sigma rules
 
 Options:
-  -m, --mapping-type [chainsaw|logprep]
+  -m, --mapping-type [chainsaw|sigma]
                                   Defines how sigval will parse the mapping
-                                  file (default: chainsaw)
+                                  file (default: sigma)
   -d, --diff-view                 Format output such that it can be used for
                                   further processing, omit info and warnings.
   --help                          Show this message and exit.
@@ -57,11 +57,11 @@ Please note that `sigval` expects the winlogbeat file to be `.jsonl`, and the ma
 
 
 ## Options
-- `-m, --mapping-type [chainsaw|logprep]`
+- `-m, --mapping-type [chainsaw|sigma]`
 
-    Default is chainsaw.
-    You will need to set this option if you use something other than a chainsaw mapping so that sigval knows how to parse it.
-    Currently available formats are chainsaw and logprep.
+    Default is Sigma.
+    You will need to set this option if you use something other than a default sigma mapping so that sigval knows how to parse it.
+    Currently available formats are chainsaw and sigma.
 - `-d, --diff-view `
 
     By default, `sigval` will print some informational stuff, and all found fields will be output as a single "block".
@@ -70,11 +70,21 @@ Please note that `sigval` expects the winlogbeat file to be `.jsonl`, and the ma
 
 
 ## Examples
-
+You can use the rules, mappings and logs in `example_files` to test `sigval`.
 ```shell
-sigval mapping-to-logs path/to/mapping.yml path/to/winlogbeat.jsonl
+sigval mapping-to-logs example_files/sigma_winlogbeat_mapping.yml example_files/winlogbeat_logs.jsonl
+# Produces a lot of fields that don't occur in any event because our log
+# sample is rather small and a lot of fields are incorrectly mapped
 ```
-
 ```shell
-sigval rules-to-mapping path/to/mapping.yml dir/containing/rules/ -d
+sigval mapping-to-logs example_files/chainsaw_winlogbeat_mapping.yml example_files/winlogbeat_logs.jsonl -m chainsaw
+# Still some fields not occurring in any event, but a lot less due to the mapping being refined
+```
+```shell
+sigval rules-to-mapping example_files/sigma_winlogbeat_mapping.yml example_files/sigma_rules/
+# Shows that most fields used by our rules are present, but some (like those used by network rules) are missing
+```
+```shell
+sigval rules-to-mapping example_files/sigma_zeek_mapping.yml example_files/sigma_rules/
+# Complains about a lot more missing fields because now those used by windows rules are missing
 ```

@@ -1,0 +1,636 @@
+---
+name: Chainsaw's groupless Sigma mappings for Event Logs
+kind: jsonl
+rules: sigma
+
+
+# Most filters are taken from https://github.com/SigmaHQ/sigma/blob/master/tools/config/generic/sysmon.yml#L102
+extensions:
+  preconditions:
+    - for: # Execution Of Non-Existing File
+        logsource.category: process_creation
+      filter:
+        int(EventID): 1
+        Provider: Microsoft-Windows-Sysmon
+
+    - for: # Suspicious Driver Load from Temp
+        logsource.category: driver_load
+      filter:
+        int(EventID): 6
+        Provider: Microsoft-Windows-Sysmon
+
+    - for: # DLL Load By System Process From Suspicious Locations
+        logsource.category: image_load
+      filter:
+        int(EventID): 7
+        Provider: Microsoft-Windows-Sysmon
+
+    - for: # Suspicious Remote Thread Source
+        logsource.category: create_remote_thread
+      filter:
+        int(EventID): 8
+        Provider: Microsoft-Windows-Sysmon
+
+    - for: # Raw Disk Access Using Illegitimate Tools
+        logsource.category: raw_access_thread
+      filter:
+        int(EventID): 9
+        Provider: Microsoft-Windows-Sysmon
+
+    - for: # Creation of an Executable by an Executable
+        logsource.category: file_event
+      filter:
+        int(EventID): 11
+        Provider: Microsoft-Windows-Sysmon
+
+    - for: # Sysmon Blocked Executable
+        logsource.category: file_block
+      filter:
+        int(EventID): 27
+        Provider: Microsoft-Windows-Sysmon
+
+    - for: # Antivirus Relevant File Paths Alerts
+        logsource.category: antivirus
+      filter:
+        Provider: Microsoft-Windows-Security-Auditing
+
+    - for: # Alternate PowerShell Hosts
+        logsource.category: ps_classic_start
+      filter:
+        Provider: PowerShell
+
+    - for: # Sysmon Configuration Change, incorrectly triggered on EventId 16 from Windows-Kernel
+        logsource.service: sysmon
+      filter:
+        Provider: Microsoft-Windows-Sysmon
+
+    - for: # Space After Filename - macOS
+        logsource.product: macos
+      filter:
+        Provider: something-macOS # doesn't really matter, we don't have any macOS devices
+
+#exclusions:
+#- None
+
+# This mapping has been created using the old logprep mapping [1], the default Sigma winlogbeat mapping [2] and
+# the list of exported fields by elastic themselves [3].
+#
+# [1] https://gitlab.fkie.fraunhofer.de/CERTBpol/ki-angriffserkennung/-/blob/master/Daten/Sigma-Studie/misc/winlogbeat-modules-enabled-custom.yml
+# [2] https://github.com/SigmaHQ/sigma/tree/master/tools/config
+# [3] https://www.elastic.co/guide/en/beats/winlogbeat/master/exported-fields.html
+
+groups:
+  - name: Sigma
+    timestamp: "@timestamp"
+    filter:
+      Provider: "*"
+    fields:
+      - from: Provider
+        to: winlog.provider_name
+      - name: Event ID
+        from: EventID
+        to: winlog.event_id
+
+      - from: AccessList
+        to: winlog.event_data.AccessList
+        visible: false
+      - from: AccessMask
+        to: winlog.event_data.AccessMask
+        visible: false
+      - from: Accesses
+        to: winlog.event_data.Accesses
+        visible: false
+      - from: AccountName
+        to: winlog.event_data.AccountName
+        visible: false
+      - from: Action
+        to: event.action
+        visible: false
+      - from: Address
+        to: winlog.event_data.Address
+        visible: false
+      - from: AllowedToDelegateTo
+        to: winlog.event_data.AllowedToDelegateTo
+        visible: false
+      - from: Application
+        to: process.executable
+        visible: false
+      - from: ApplicationPath
+        to: winlog.event_data.ApplicationPath
+        visible: false
+      - from: AttributeLDAPDisplayName
+        to: winlog.event_data.AttributeLDAPDisplayName
+        visible: false
+      - from: AttributeValue
+        to: winlog.event_data.AttributeValue
+        visible: false
+      - from: AuditPolicyChanges
+        to: winlog.event_data.AuditPolicyChanges
+        visible: false
+      - from: AuditSourceName
+        to: winlog.event_data.AuditSourceName
+        visible: false
+      - from: AuthenticationPackageName
+        to: winlog.event_data.AuthenticationPackageName
+        visible: false
+      - from: CallTrace
+        to: winlog.event_data.CallTrace
+        visible: false
+      - from: CallerProcessName
+        to: winlog.event_data.CallerProcessName
+        visible: false
+      - from: Caption
+        to: winlog.event_data.Caption
+        visible: false
+      - from: CertThumbprint
+        to: winlog.event_data.CertThumbprint
+        visible: false
+      - from: Channel
+        to: winlog.channel
+        visible: false
+      - from: ClassName
+        to: winlog.event_data.ClassName
+        visible: false
+      - from: CommandLine
+        to: process.command_line
+        visible: false
+      - from: Commandline
+        to: process.command_line
+        visible: false
+      - from: Company
+        to: winlog.event_data.Company
+        visible: false
+      - from: Contents
+        to: dns.question.name
+        visible: false
+      - from: ContextInfo
+        to: winlog.event_data.ContextInfo
+        visible: false
+      - from: CreationUtcTime
+        to: winlog.event_data.CreationUtcTime
+        visible: false
+      - from: CurrentDirectory
+        to: process.working_directory
+        visible: false
+      - from: Description
+        to: winlog.event_data.Description
+        visible: false
+      - from: DestAddress
+        to: destination.ip
+        visible: false
+      - from: dst_ip
+        to: destination.ip
+        visible: false
+      - from: DestPort
+        to: destination.port
+        visible: false
+      - from: destination.port
+        to: destination.port
+        visible: false
+      - from: dst_port
+        to: destination.port
+        visible: false
+      - from: Destination
+        to: destination.ip
+        visible: false
+      - from: DestinationHostname
+        to: destination.domain
+        visible: false
+      - from: DestinationIp
+        to: destination.ip
+        visible: false
+      - from: DestinationIsIpv6
+        to: winlog.event_data.DestinationIsIpv6
+        visible: false
+      - from: DestinationPort
+        to: destination.port
+        visible: false
+      - from: Details
+        to: winlog.event_data.Details
+        visible: false
+      - from: details
+        to: winlog.event_data.Details
+        visible: false
+      - from: Device
+        to: winlog.event_data.Device
+        visible: false
+      - from: DeviceDescription
+        to: winlog.event_data.DeviceDescription
+        visible: false
+      - from: DeviceName
+        to: winlog.event_data.DeviceName
+        visible: false
+      - from: EngineVersion
+        to: powershell.engine.version
+        visible: false
+      - from: ErrorCode
+        to: winlog.event_data.ErrorCode
+        visible: false
+      - from: EventType
+        to: event.type
+        visible: false
+      - from: FailureCode
+        to: winlog.event_data.FailureCode
+        visible: false
+      - from: FileName
+        to: file.path
+        visible: false
+      - from: Filename
+        to: file.path
+        visible: false
+      - from: FileVersion
+        to: winlog.event_data.FileVersion
+        visible: false
+      - from: GrantedAccess
+        to: winlog.event_data.GrantedAccess
+        visible: false
+      - from: Hashes
+        to: winlog.event_data.Hashes
+        visible: false
+      - from: HiveName
+        to: winlog.event_data.HiveName
+        visible: false
+      - from: HostApplication
+        to: process.command_line
+        visible: false
+      - from: HostName
+        to: host.name
+        visible: false
+      - from: HostVersion
+        to: powershell.process.executable_version
+        visible: false
+      - from: Image
+        to: process.executable
+        visible: false
+      - from: ImageFileName
+        to: winlog.event_data.ImageFileName
+        visible: false
+      - from: ImageLoaded
+        to: file.path
+        visible: false
+      - from: ImagePath
+        to: winlog.event_data.ImagePath
+        visible: false
+      - from: Imphash
+        to: hash.imphash
+        visible: false
+      - from: IMPHASH
+        to: hash.imphash
+        visible: false
+      - from: imphash
+        to: hash.imphash
+        visible: false
+      - from: Initiated
+        to: winlog.event_data.Initiated
+        visible: false
+      - from: IntegrityLevel
+        to: winlog.event_data.IntegrityLevel
+        visible: false
+      - from: IpAddress
+        to: source.ip
+        visible: false
+      - from: KeyLength
+        to: winlog.event_data.KeyLength
+        visible: false
+      - from: Keywords
+        to: winlog.keywords
+        visible: false
+      - from: LayerRTID
+        to: winlog.event_data.LayerRTID
+        visible: false
+      - from: Level
+        to: log.level
+        visible: false
+      - from: LocalName
+        to: winlog.event_data.LocalName
+        visible: false
+      - from: LogonId
+        to: winlog.event_data.LogonId
+        visible: false
+      - from: LogonProcessName
+        to: winlog.event_data.LogonProcessName
+        visible: false
+      - from: LogonType
+        to: winlog.event_data.LogonType
+        visible: false
+      - from: MD5
+        to: process.hash.md5
+        visible: false
+      - from: md5
+        to: process.hash.md5
+        visible: false
+      - from: Message
+        to: message
+        visible: false
+      - from: ModifyingApplication
+        to: winlog.event_data.ModifyingApplication
+        visible: false
+      - from: NewName
+        to: winlog.event_data.NewName
+        visible: false
+      - from: NewTargetUserName
+        to: winlog.event_data.NewTargetUserName
+        visible: false
+      - from: NewTemplateContent
+        to: winlog.event_data.NewTemplateContent
+        visible: false
+      - from: NewUacValue
+        to: winlog.event_data.NewUacValue
+        visible: false
+      - from: NewValue
+        to: winlog.event_data.NewValue
+        visible: false
+      - from: ObjectClass
+        to: winlog.event_data.ObjectClass
+        visible: false
+      - from: ObjectName
+        to: winlog.event_data.ObjectName
+        visible: false
+      - from: ObjectServer
+        to: winlog.event_data.ObjectServer
+        visible: false
+      - from: ObjectType
+        to: winlog.event_data.ObjectType
+        visible: false
+      - from: ObjectValueName
+        to: winlog.event_data.ObjectValueName
+        visible: false
+      - from: OldTargetUserName
+        to: winlog.event_data.OldTargetUserName
+        visible: false
+      - from: OldUacValue
+        to: winlog.event_data.OldUacValue
+        visible: false
+      - from: Origin
+        to: winlog.event_data.Origin
+        visible: false
+      - from: OriginalFileName
+        to: winlog.event_data.OriginalFileName
+        visible: false
+      - from: OriginalFilename
+        to: winlog.event_data.OriginalFileName
+        visible: false
+      - from: OriginalName
+        to: winlog.event_data.OriginalFileName
+        visible: false
+      - from: ParentCommandLine
+        to: process.parent.command_line
+        visible: false
+      - from: ParentImage
+        to: process.parent.executable
+        visible: false
+      - from: ParentUser
+        to: winlog.event_data.ParentUser
+        visible: false
+      - from: PasswordLastSet
+        to: winlog.event_data.PasswordLastSet
+        visible: false
+      - from: Path
+        to: file.path
+        visible: false
+      - from: Payload
+        to: winlog.event_data.Payload
+        visible: false
+      - from: PipeName
+        to: file.name
+        visible: false
+      - from: PossibleCause
+        to: winlog.event_data.PossibleCause
+        visible: false
+      - from: PrivilegeList
+        to: winlog.event_data.PrivilegeList
+        visible: false
+      - from: ProcessId
+        to: process.pid
+        visible: false
+      - from: ProcessName
+        to: process.executable
+        visible: false
+      - from: Product
+        to: winlog.event_data.Product
+        visible: false
+      - from: Properties
+        to: winlog.event_data.Properties
+        visible: false
+      - from: Protocol
+        to: network.protocol
+        visible: false
+      - from: ProviderName
+        to: winlog.provider_name
+        visible: false
+      - from: Provider_Name
+        to: winlog.provider_name
+        visible: false
+      - from: QNAME
+        to: winlog.event_data.QNAME
+        visible: false
+      - from: Query
+        to: winlog.event_data.Query
+        visible: false
+      - from: QueryName
+        to: dns.question.name
+        visible: false
+      - from: QueryResults
+        to: winlog.event_data.QueryResults
+        visible: false
+      - from: QueryStatus
+        to: sysmon.dns.status
+        visible: false
+      - from: RelativeTargetName
+        to: winlog.event_data.RelativeTargetName
+        visible: false
+      - from: RemoteAddress
+        to: winlog.event_data.RemoteAddress
+        visible: false
+      - from: RemoteName
+        to: winlog.event_data.RemoteName
+        visible: false
+      - from: SamAccountName
+        to: winlog.event_data.SamAccountName
+        visible: false
+      - from: ScriptBlockText
+        to: powershell.file.script_block_text
+        visible: false
+      - from: SearchFilter
+        to: winlog.event_data.SearchFilter
+        visible: false
+      - from: ServerName
+        to: winlog.event_data.ServerName
+        visible: false
+      - from: Service
+        to: winlog.event_data.Service
+        visible: false
+      - from: ServiceFileName
+        to: winlog.event_data.ServiceFileName
+        visible: false
+      - from: ServiceName
+        to: winlog.event_data.ServiceName
+        visible: false
+      - from: ServicePrincipalNames
+        to: winlog.event_data.ServicePrincipalNames
+        visible: false
+      - from: ServiceStartType
+        to: winlog.event_data.ServiceStartType
+        visible: false
+      - from: ServiceType
+        to: winlog.event_data.ServiceType
+        visible: false
+      - from: SHA256
+        to: process.hash.sha256
+        visible: false
+      - from: sha256
+        to: process.hash.sha256
+        visible: false
+      - from: ShareName
+        to: winlog.event_data.ShareName
+        visible: false
+      - from: SidHistory
+        to: winlog.event_data.SidHistory
+        visible: false
+      - from: Signature
+        to: winlog.event_data.Signature
+        visible: false
+      - from: SignatureStatus
+        to: winlog.event_data.SignatureStatus
+        visible: false
+      - from: Signed
+        to: file.code_signature.signed
+        visible: false
+      - from: SourceAddress
+        to: source.ip
+        visible: false
+      - from: SourceCommandLine
+        to: process.parent.command_line
+        visible: false
+      - from: SourceParentImage
+        to: process.parent.executable
+        visible: false
+      - from: SourceImage
+        to: process.executable
+        visible: false
+      - from: SourceIp
+        to: source.ip
+        visible: false
+      - from: SourcePort
+        to: source.port
+        visible: false
+      - from: SourceIp
+        to: source.ip
+        visible: false
+      - from: src_ip
+        to: source.ip
+        visible: false
+      - from: Source_Name
+        to: source.domain
+        visible: false
+      - from: StartAddress
+        to: winlog.event_data.StartAddress
+        visible: false
+      - from: StartFunction
+        to: winlog.event_data.StartFunction
+        visible: false
+      - from: StartModule
+        to: winlog.event_data.StartModule
+        visible: false
+      - from: State
+        to: winlog.event_data.State
+        visible: false
+      - from: Status
+        to: winlog.event_data.Status
+        visible: false
+      - from: SubjectDomainName
+        to: user.domain
+        visible: false
+      - from: SubjectLogonId
+        to: winlog.event_data.SubjectLogonId
+        visible: false
+      - from: SubjectUserName
+        to: user.name
+        visible: false
+      - from: SubjectUserSid
+        to: winlog.event_data.SubjectUserSid
+        visible: false
+      - from: TargetFilename
+        to: file.path
+        visible: false
+      - from: TargetFileName
+        to: file.path
+        visible: false
+      - from: TargetImage
+        to: winlog.event_data.TargetImage
+        visible: false
+      - from: TargetLogonId
+        to: winlog.event_data.TargetLogonId
+        visible: false
+      - from: TargetName
+        to: winlog.event_data.TargetName
+        visible: false
+      - from: TargetObject
+        to: winlog.event_data.TargetObject
+        visible: false
+      - from: Targetobject
+        to: winlog.event_data.TargetObject
+        visible: false
+      - from: TargetOutboundUserName
+        to: winlog.event_data.TargetOutboundUserName
+        visible: false
+      - from: TargetParentProcessId
+        to: winlog.event_data.TargetParentProcessId
+        visible: false
+      - from: TargetServerName
+        to: winlog.event_data.TargetServerName
+        visible: false
+      - from: TargetSid
+        to: winlog.event_data.TargetSid
+        visible: false
+      - from: TargetUserName
+        to: user.name
+        visible: false
+      - from: TargetUserSid
+        to: winlog.event_data.TargetUserSid
+        visible: false
+      - from: TaskName
+        to: winlog.event_data.TaskName
+        visible: false
+      - from: TemplateContent
+        to: winlog.event_data.TemplateContent
+        visible: false
+      - from: TicketEncryptionType
+        to: winlog.event_data.TicketEncryptionType
+        visible: false
+      - from: TicketOptions
+        to: winlog.event_data.TicketOptions
+        visible: false
+      - from: Type
+        to: winlog.user.type
+        visible: false
+      - from: User
+        to: user.name
+        visible: false
+      - from: USER
+        to: user.name
+        visible: false
+      - from: UserName
+        to: user.name
+        visible: false
+      - from: Value
+        to: registry.value
+        visible: false
+      - from: Workstation
+        to: winlog.event_data.Workstation
+        visible: false
+      - from: WorkstationName
+        to: source.domain
+        visible: false
+      - from: param1
+        to: winlog.event_data.param1
+        visible: false
+      - from: param2
+        to: winlog.event_data.param2
+        visible: false
+      - from: processPath
+        to: process.executable
+        visible: false
+      - from: ProcessPath
+        to: process.executable
+        visible: false
