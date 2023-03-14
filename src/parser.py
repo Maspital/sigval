@@ -1,10 +1,7 @@
 import yaml
 
 
-def chainsaw_mapping(direction, mapping_file):
-    with open(mapping_file, "r") as file:
-        mapping = yaml.safe_load(file)
-
+def chainsaw_mapping(direction, mapping):
     fields_mapped = []
     for group in mapping["groups"]:
         # there is usually only one group, but theoretically more can be defined
@@ -19,12 +16,10 @@ def chainsaw_mapping(direction, mapping_file):
     return fields_mapped
 
 
-def sigma_mapping(direction, mapping_file):
+def sigma_mapping(direction, mapping):
     # Fields mapped FROM are just they dict keys (aka strings),
     # while the fields mapped TO can be strings, dicts or lists
-    with open(mapping_file, "r") as file:
-        mapping = yaml.safe_load(file)["fieldmappings"]
-
+    mapping = mapping["fieldmappings"]
     fields_mapped = []
     if direction == "from":
         for field in mapping:
@@ -65,7 +60,7 @@ def get_all_keys(current_dict, previous_key):
     return all_keys
 
 
-def get_fields_from_list(list_of_stuff):
+def fields_from_list_in_rule(list_of_stuff):
     # Strings and dict values within Sigma rule are not desired, only get keys of dicts inside the list
     contained_fields = []
     for entry in list_of_stuff:
@@ -76,5 +71,27 @@ def get_fields_from_list(list_of_stuff):
             contained_fields.extend(list(keys))
         else:
             raise TypeError(f"Unexpected data type \"{type(entry)}\" for value \"{entry}\" "
-                            f"when parsing sigma rules. Expected str or dict.")
+                            f"when parsing sigma rule. Expected str or dict.")
     return contained_fields
+
+
+def fields_from_rule(sigma_rule):
+    fields_used = []
+    detection_entries = list(sigma_rule["detection"].keys())
+    for detection_entry in detection_entries:
+        content = sigma_rule["detection"][detection_entry]
+        data_type = type(content)
+        if data_type is str:
+            continue
+        elif data_type is list:
+            fields_within_entry = fields_from_list_in_rule(content)
+            for field in fields_within_entry:
+                fields_used.append(field.partition("|")[0])
+        elif data_type is dict:
+            fields_within_entry = list(content.keys())
+            for field in fields_within_entry:
+                fields_used.append(field.partition("|")[0])
+        else:
+            raise TypeError(f"Unexpected data type \"{data_type}\" for value \"{content}\" "
+                            f"when parsing sigma rule. Expected str, list or dict.")
+    return fields_used

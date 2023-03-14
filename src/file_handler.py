@@ -25,12 +25,15 @@ def fields_from_logs(winlogbeat_file):
 
 def fields_from_mapping(direction, mapping_file, mapping_type):
     # Direction is either "to" (field used by Sigma rule) or "from" (field that should appear in logs)
+    with open(mapping_file, "r") as file:
+        mapping = yaml.safe_load(file)
+
     fields_mapped = []
     match mapping_type:
         case "chainsaw":
-            fields_mapped = parser.chainsaw_mapping(direction, mapping_file)
+            fields_mapped = parser.chainsaw_mapping(direction, mapping)
         case "sigma":
-            fields_mapped = parser.sigma_mapping(direction, mapping_file)
+            fields_mapped = parser.sigma_mapping(direction, mapping)
 
     if not fields_mapped:
         print_error("mapping file")
@@ -47,22 +50,7 @@ def fields_from_rules(sigma_dir):
             if not sigma_rule:
                 # Can happen if the file is simply empty or fully commented out
                 continue
-
-            detection_entries = list(sigma_rule["detection"].keys())
-            for detection_entry in detection_entries:
-                data_type = type(sigma_rule["detection"][detection_entry])
-                if data_type is str:
-                    continue
-                elif data_type is list:
-                    fields_within_entry = parser.get_fields_from_list(sigma_rule["detection"][detection_entry])
-                    for field in fields_within_entry:
-                        fields_used.append(field.partition("|")[0])
-                elif data_type is dict:
-                    fields_within_entry = list(sigma_rule["detection"][detection_entry].keys())
-                    for field in fields_within_entry:
-                        fields_used.append(field.partition("|")[0])
-                else:
-                    print(f"\033[91m[WARNING]\033[0m Unexpected data type: {data_type}")
+            fields_used.extend(parser.fields_from_rule(sigma_rule))
 
     fields_used = list(set(fields_used))
     fields_used.sort()
