@@ -1,0 +1,14 @@
+some: fields
+whatever: stuff
+detection:
+  selection_webdav:
+    - c-useragent|contains: 'WebDAV'
+    - c-uri|contains: 'webdav'
+  selection_executable:
+    - resp_mime_types|contains: 'dosexec'
+    - c-uri|endswith: '.exe'
+    - 'not this value'
+  filter_browser:
+    Image|endswith:
+      - '\firefox.exe'
+      - '\chrome.exe'

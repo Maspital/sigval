@@ -1,0 +1,9 @@
+fieldmappings:
+    EventID: event.code
+    SubjectDomainName:
+        service=security: user.domain
+        default: winlog.event_data.SubjectDomainName
+    dest_domain:
+        - query
+        - host
+        - server_name

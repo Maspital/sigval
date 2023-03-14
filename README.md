@@ -21,7 +21,8 @@ cd sigval
 pip install -e .
 ```
 
-Run `sigval --help`, which will list the aforementioned three possible "modes" aka subcommands:
+Run `tox` to verify functionality and `sigval --help`,
+which will list the aforementioned three possible "modes" aka subcommands:
 ```
 ~$ sigval --help
 Usage: sigval [OPTIONS] COMMAND [ARGS]...

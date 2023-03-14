@@ -1,0 +1,9 @@
+fieldmappings:
+    EventID: event.code
+    ErrorCode:
+        service=windefend: winlog.event_data.Error\ Code
+        default: winlog.event_data.ErrorCode
+    dest_domain:
+        - [query, stuff]
+        - host
+        - server_name

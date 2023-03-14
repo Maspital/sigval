@@ -1,0 +1,26 @@
+---
+name: Chainsaw's groupless Sigma mappings for Event Logs
+kind: jsonl
+rules: sigma
+
+groups:
+  - name: Sigma
+    timestamp: "@timestamp"
+    filter:
+      Provider: "*"
+    fields:
+      - from: AccessList
+        to: winlog.event_data.AccessList
+        visible: false
+      - from: [AccessMask, EvilLists]
+        to: winlog.event_data.AccessMask
+        visible: false
+      - from: 1234
+        to: winlog.event_data.Accesses
+        visible: false
+      - from: AccountName
+        to: [winlog.event_data.AccountName]
+        visible: false
+      - from: Action
+        to: 1234
+        visible: false
