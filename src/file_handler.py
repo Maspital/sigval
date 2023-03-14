@@ -4,9 +4,6 @@ import json
 
 import parser
 
-ERR = "\033[91m[ERROR]"
-END = "\033[0m"
-
 
 def fields_from_logs(winlogbeat_file):
     with open(winlogbeat_file, "r") as jsonl_file:
@@ -61,5 +58,5 @@ def fields_from_rules(sigma_dir):
 
 
 def print_error(cause):
-    print(f"{ERR} No fields were obtained from the provided {cause}, results will likely be incorrect. "
-          f"Are you sure this is the correct path?{END}\n")
+    print(f"\033[91m[WARNING] No fields were obtained from the provided {cause}, results will likely be incorrect. "
+          f"Are you sure this is the correct path?\033[0m\n")

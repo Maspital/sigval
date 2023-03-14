@@ -1,6 +1,3 @@
-import yaml
-
-
 def chainsaw_mapping(direction, mapping):
     fields_mapped = []
     for group in mapping["groups"]:
