@@ -1,24 +1,26 @@
 # sigval
 Sigma Mapping Validator
 
-Easy-to-use tool for checking the completeness and validity of a Sigma mapping file.
+Easy-to-use tool for checking the completeness of a Sigma mapping file within the context of existing log files and rules.
 Currently only supports mapping files written for the Sigma converter and Chainsaw, others will be added as needed.
-A mapping file can be compared to either a logfile containing winlogbeat events or a directory containing Sigma rules,
+A mapping file can be compared to either a logfile containing events or a directory containing Sigma rules,
 resulting in three modes:
-- `mapping-to-logs`: Check if all fields that are mapped ***to*** actually occur in any winlogbeat event,
+- `mapping-to-logs`: Check if all fields that are mapped ***to*** actually occur in any event,
 potentially revealing incorrectly mapped fields.
 - `mapping-to-rules`: Check if all fields that are mapped ***from*** actually occur in any Sigma rule,
 revealing any obsolete mapped fields.
 - `rules-to-mapping`: Check if all fields used by a set of Sigma rules are accounted for in the mapping,
 revealing if any are missing.
 
+Requires Python `v3.7` or higher.
+
 
 ## Usage
-Clone this repo and install `sigval` directly or, if you prefer, in a virtual environment:
+Clone this repo and install `sigval` in a virtual environment:
 ```shell
 git clone git@github.com:Maspital/sigval.git
 cd sigval
-pip install -e .
+python -m venv "sigval" && pip install -e .
 ```
 
 Run `tox` to verify functionality and `sigval --help`,
@@ -34,7 +36,7 @@ Options:
   --help  Show this message and exit.
 
 Commands:
-  mapping-to-logs   Compare fields mapped *TO* to winlogbeat events
+  mapping-to-logs   Compare fields mapped *TO* to events
   mapping-to-rules  Compare fields mapped *FROM* to Sigma rules
   rules-to-mapping  Compare fields in Sigma rules to fields mapped *FROM*
 ```
@@ -54,7 +56,7 @@ Options:
                                   further processing, omit info and warnings.
   --help                          Show this message and exit.
 ```
-Please note that `sigval` expects the winlogbeat file to be `.jsonl`, and the mapping file to be `.yml`.
+Please note that `sigval` expects the log file to be `.jsonl`, and the mapping file to be `.yml`.
 
 
 ## Options
