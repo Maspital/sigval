@@ -26,11 +26,10 @@ def fields_from_mapping(direction, mapping_file, mapping_type):
         mapping = yaml.safe_load(file)
 
     fields_mapped = []
-    match mapping_type:
-        case "chainsaw":
-            fields_mapped = parser.chainsaw_mapping(direction, mapping)
-        case "sigma":
-            fields_mapped = parser.sigma_mapping(direction, mapping)
+    if mapping_type == "chainsaw":
+        fields_mapped = parser.chainsaw_mapping(direction, mapping)
+    elif mapping_type == "sigma":
+        fields_mapped = parser.sigma_mapping(direction, mapping)
 
     if not fields_mapped:
         print_error("mapping file")
@@ -41,6 +40,9 @@ def fields_from_rules(sigma_dir):
     fields_used = []
     for subdir, dirs, files in os.walk(sigma_dir):
         for file in files:
+            if not file.endswith(".yml"):
+                continue
+
             with open(os.path.join(subdir, file)) as yaml_file:
                 sigma_rule = yaml.safe_load(yaml_file)
 
