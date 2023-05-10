@@ -8,6 +8,7 @@ setup(
     install_requires=[
         "pyyaml",
         "Click",
+        "tox",
     ],
     entry_points={
         'console_scripts': [
