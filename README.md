@@ -20,7 +20,8 @@ Clone this repo and install `sigval` in a virtual environment:
 ```shell
 git clone git@github.com:Maspital/sigval.git
 cd sigval
-python -m venv "sigval" && pip install -e .
+python3 -m venv "sigval_env" && source sigval/bin/activate
+pip3 install -e .
 ```
 
 Run `tox` to verify functionality and `sigval --help`,
