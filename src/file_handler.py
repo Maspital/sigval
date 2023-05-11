@@ -2,7 +2,7 @@ import os
 import yaml
 import json
 
-import parser
+import content_parser
 
 
 def fields_from_logs(winlogbeat_file):
@@ -11,7 +11,7 @@ def fields_from_logs(winlogbeat_file):
 
     fields_used = []
     for event in winlogbeat:
-        fields_used.extend(parser.get_all_keys(event, ""))
+        fields_used.extend(content_parser.get_all_keys(event, ""))
     fields_used = list(set(fields_used))
     fields_used.sort()
 
@@ -27,9 +27,9 @@ def fields_from_mapping(direction, mapping_file, mapping_type):
 
     fields_mapped = []
     if mapping_type == "chainsaw":
-        fields_mapped = parser.chainsaw_mapping(direction, mapping)
+        fields_mapped = content_parser.chainsaw_mapping(direction, mapping)
     elif mapping_type == "sigma":
-        fields_mapped = parser.sigma_mapping(direction, mapping)
+        fields_mapped = content_parser.sigma_mapping(direction, mapping)
 
     if not fields_mapped:
         print_error("mapping file")
@@ -49,7 +49,7 @@ def fields_from_rules(sigma_dir):
             if not sigma_rule:
                 # Can happen if the file is simply empty or fully commented out
                 continue
-            fields_used.extend(parser.fields_from_rule(sigma_rule))
+            fields_used.extend(content_parser.fields_from_rule(sigma_rule))
 
     fields_used = list(set(fields_used))
     fields_used.sort()

@@ -1,7 +1,7 @@
 import unittest
 import yaml
 
-from parser import chainsaw_mapping, sigma_mapping, fields_from_rule, get_all_keys
+from content_parser import chainsaw_mapping, sigma_mapping, fields_from_rule, get_all_keys
 
 base_path = "src/tests/dummy_files"
 case = unittest.TestCase()
