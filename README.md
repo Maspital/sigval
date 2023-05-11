@@ -74,20 +74,23 @@ Please note that `sigval` expects the log file to be `.jsonl`, and the mapping f
 
 ## Examples
 You can use the rules, mappings and logs in `example_files` to test `sigval`.
-```shell
-sigval mapping-to-logs example_files/sigma_winlogbeat_mapping.yml example_files/winlogbeat_logs.jsonl
-# Produces a lot of fields that don't occur in any event because our log
-# sample is rather small and a lot of fields are incorrectly mapped
-```
-```shell
-sigval mapping-to-logs example_files/chainsaw_winlogbeat_mapping.yml example_files/winlogbeat_logs.jsonl -m chainsaw
-# Still some fields not occurring in any event, but a lot less due to the mapping being refined
-```
-```shell
-sigval rules-to-mapping example_files/sigma_winlogbeat_mapping.yml example_files/sigma_rules/
-# Shows that most fields used by our rules are present, but some (like those used by network rules) are missing
-```
-```shell
-sigval rules-to-mapping example_files/sigma_zeek_mapping.yml example_files/sigma_rules/
-# Complains about a lot more missing fields because now those used by windows rules are missing
-```
+- ```shell
+  sigval mapping-to-logs example_files/sigma_winlogbeat_mapping.yml example_files/winlogbeat_logs.jsonl
+    ```
+  Produces a lot of fields that don't occur in any event because our log sample is rather small and a lot of fields are 
+  incorrectly mapped.
+
+- ```shell
+  sigval mapping-to-logs example_files/chainsaw_winlogbeat_mapping.yml example_files/winlogbeat_logs.jsonl -m chainsaw
+  ```
+  Still some fields not occurring in any event, but a lot less due to the mapping being refined.
+
+- ```shell
+  sigval rules-to-mapping example_files/sigma_winlogbeat_mapping.yml example_files/sigma_rules/
+  ```
+  Shows that most fields used by our rules are present, but some (like those used by network rules) are missing.
+
+- ```shell
+  sigval rules-to-mapping example_files/sigma_zeek_mapping.yml example_files/sigma_rules/
+  ```
+  Complains about a lot more missing fields because now those used by windows rules are missing.
